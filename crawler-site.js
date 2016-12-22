@@ -10,6 +10,7 @@ SiteCrawl.prototype.config = function(configs) {
   this.crawler.maxDepth = 3;
   this.crawler.respectRobotsTxt = true;
   this.crawler.userAgent = configs['userAgent'];
+  console.log(configs['userAgent']);
 }
 
 SiteCrawl.prototype.start = function() {
@@ -27,10 +28,6 @@ SiteCrawl.prototype.start = function() {
       return true;
   });
 
-  this.crawler.on("complete", function(e) {
-
-  });
-
   this.crawler.on("fetchcomplete", function(queueItem, responseBuffer, response) {
     countPages++;
     cache = ["MISS", "EXPIRED"];
@@ -38,12 +35,17 @@ SiteCrawl.prototype.start = function() {
       countNoCached++;
     }
     cachedPrecentage = (countNoCached/countPages)*100;
-    console.log("%d %s > cold: %d% | url: %s | cache: %s", countPages,
-                                                           response.headers['markup-device'],
-                                                           cachedPrecentage.toFixed(2),
-                                                           queueItem.url,
-                                                           response.headers['cf-cache-status']
+    console.log("%d %s > cold: %d% | url: %s | cache: %s",
+      countPages,
+      response.headers['markup-device'],
+      cachedPrecentage.toFixed(2),
+      queueItem.url,
+      response.headers['cf-cache-status']
     );
+  });
+
+  this.crawler.on("complete", function() {
+    console.log("urls: %d | cold: %d% (%d urls)", countPages, cachedPrecentage.toFixed(2), countNoCached);
   });
 
   return this.crawler.start();
