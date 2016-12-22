@@ -10,22 +10,20 @@ SiteCrawl.prototype.config = function(configs) {
   this.crawler.maxDepth = 3;
   this.crawler.respectRobotsTxt = true;
   this.crawler.userAgent = configs['userAgent'];
-  console.log(configs['userAgent']);
 }
 
-SiteCrawl.prototype.start = function() {
+SiteCrawl.prototype.start = function(callback) {
   var countPages = 0;
   var countNoCached = 0;
   var cachedPrecentage = 0.0;
-
-  //this.crawler.userAgent = "Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19 Warmer";
+  var deviceType;
 
   this.crawler.addFetchCondition(function(parsedURL) {
-      if (parsedURL.path.match(/\.(css|jpg|pdf|docx|js|png|ico)/i)) {
-          return false;
-      }
+    if (parsedURL.path.match(/\.(css|jpg|pdf|docx|js|png|ico)/i)) {
+      return false;
+    }
 
-      return true;
+    return true;
   });
 
   this.crawler.on("fetchcomplete", function(queueItem, responseBuffer, response) {
@@ -34,22 +32,33 @@ SiteCrawl.prototype.start = function() {
     if(cache.indexOf(response.headers['cf-cache-status']) > -1) {
       countNoCached++;
     }
+
+    deviceType = response.headers['markup-device'];
     cachedPrecentage = (countNoCached/countPages)*100;
-    console.log("%d %s > cold: %d% | url: %s | cache: %s",
+    console.log("%d %s > url: %s | cache: %s",
       countPages,
-      response.headers['markup-device'],
-      cachedPrecentage.toFixed(2),
+      deviceType,
       queueItem.url,
       response.headers['cf-cache-status']
     );
   });
 
   this.crawler.on("complete", function() {
-    console.log("urls: %d | cold: %d% (%d urls)", countPages, cachedPrecentage.toFixed(2), countNoCached);
+    var results = {
+      pagesTotal: countPages,
+      coldTotal: countNoCached,
+      coldPrecentage: cachedPrecentage.toFixed(2),
+      deviceType: deviceType
+    }
+
+    callback(results);
   });
 
-  return this.crawler.start();
+  this.crawler.start();
 }
 
-//Configuration
+SiteCrawl.prototype.results = function(results) {
+  console.log("device: %s | urls: %d | cold total: %d | cold percentage total: %d%", results['deviceType'], results['pagesTotal'], results['coldTotal'], results['coldPrecentage']);
+}
+
 module.exports = SiteCrawl;
