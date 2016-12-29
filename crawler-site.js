@@ -6,7 +6,7 @@ var SiteCrawl = function(site) {
 
 SiteCrawl.prototype.config = function(configs) {
   this.crawler.interval = configs['interval'] || 200; // Ten seconds
-  this.crawler.maxConcurrency = configs['maxConcurrency'] || 8;
+  this.crawler.maxConcurrency = configs['maxConcurrency'] || 12;
   this.crawler.maxDepth = 3;
   this.crawler.respectRobotsTxt = true;
   this.crawler.userAgent = configs['userAgent'];
@@ -35,12 +35,12 @@ SiteCrawl.prototype.start = function(callback) {
 
     deviceType = response.headers['markup-device'];
     cachedPrecentage = (countNoCached/countPages)*100;
-    console.log("%d %s > url: %s | cache: %s",
-      countPages,
-      deviceType,
-      queueItem.url,
-      response.headers['cf-cache-status']
-    );
+    // console.log("%d %s > url: %s | cache: %s",
+    //   countPages,
+    //   deviceType,
+    //   queueItem.url,
+    //   response.headers['cf-cache-status']
+    // );
   });
 
   this.crawler.on("complete", function() {
