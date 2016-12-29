@@ -5,7 +5,7 @@ var SiteCrawl = function(site) {
 };
 
 SiteCrawl.prototype.config = function(configs) {
-  this.crawler.interval = configs['interval'] || 200; // Ten seconds
+  this.crawler.interval = configs['interval'] || 180; // Ten seconds
   this.crawler.maxConcurrency = configs['maxConcurrency'] || 12;
   this.crawler.maxDepth = 3;
   this.crawler.respectRobotsTxt = true;
