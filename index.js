@@ -8,8 +8,8 @@ var crawlerMobile = new Crawler(siteUrl);
  Configuration
 
  userAgent
- maxConcurrency - standard 8 threads
- interval - standard 200ms
+ maxConcurrency - standard 12 threads
+ interval - standard 180ms
 */
 var userAgent = {
   large: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.75 Safari/537.36 Warmer",
